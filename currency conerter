@@ -1,0 +1,62 @@
+import tkinter as tk
+from tkinter import ttk
+from forex_python.converter import CurrencyRates
+
+class CurrencyConverter:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Currency Converter")
+        self.master.geometry("400x300")
+        self.master.resizable(False, False)
+
+        style = ttk.Style()
+        style.configure('TLabel', font=('Arial', 12))
+        style.configure('TButton', font=('Arial', 12))
+
+        self.amount_label = ttk.Label(master, text="Amount:")
+        self.amount_label.grid(row=0, column=0, padx=10, pady=10)
+        self.amount_entry = ttk.Entry(master, font=('Arial', 12))
+        self.amount_entry.grid(row=0, column=1, padx=10, pady=10)
+
+        self.from_label = ttk.Label(master, text="From Currency:")
+        self.from_label.grid(row=1, column=0, padx=10, pady=10)
+        self.from_currency_combobox = ttk.Combobox(master, values=self.get_currency_list(), font=('Arial', 12), width=25)
+        self.from_currency_combobox.grid(row=1, column=1, padx=10, pady=10)
+
+        self.to_label = ttk.Label(master, text="To Currency:")
+        self.to_label.grid(row=2, column=0, padx=10, pady=10)
+        self.to_currency_combobox = ttk.Combobox(master, values=self.get_currency_list(), font=('Arial', 12), width=25)
+        self.to_currency_combobox.grid(row=2, column=1, padx=10, pady=10)
+
+        self.convert_button = ttk.Button(master, text="Convert", command=self.convert, style='TButton')
+        self.convert_button.grid(row=3, columnspan=2, padx=10, pady=10)
+
+    @staticmethod
+    def get_currency_list():
+        currency_names = {'USD': 'United States Dollar', 'EUR': 'Euro', 'GBP': 'British Pound', 'JPY': 'Japanese Yen', 'CAD': 'Canadian Dollar', 'AUD': 'Australian Dollar', 'CHF': 'Swiss Franc', 'CNY': 'Chinese Yuan', 'SEK': 'Swedish Krona', 'NZD': 'New Zealand Dollar', 'MXN': 'Mexican Peso', 'SGD': 'Singapore Dollar', 'HKD': 'Hong Kong Dollar', 'NOK': 'Norwegian Krone', 'KRW': 'South Korean Won', 'TRY': 'Turkish Lira', 'INR': 'Indian Rupee', 'RUB': 'Russian Ruble', 'ZAR': 'South African Rand', 'BRL': 'Brazilian Real', 'AED': 'United Arab Emirates Dirham', 'SAR': 'Saudi Riyal'}
+        return [f"{currency_code} - {currency_names[currency_code]}" for currency_code in currency_names.keys()]
+
+    def convert(self):
+        amount = float(self.amount_entry.get())
+        from_currency = self.from_currency_combobox.get().split(' - ')[0]
+        to_currency = self.to_currency_combobox.get().split(' - ')[0]
+
+        c = CurrencyRates()
+        converted_amount = c.convert(from_currency, to_currency, amount)
+        
+        result_window = tk.Toplevel(self.master)
+        result_window.title("Conversion Result")
+        result_window.geometry("300x100")
+        result_window.resizable(False, False)
+        
+        result_label = ttk.Label(result_window, text=f"{amount:.2f} {from_currency} is equal to {converted_amount:.2f} {to_currency}", font=('Arial', 12))
+        result_label.pack(padx=10, pady=10)
+
+def main():
+    root = tk.Tk()
+    app = CurrencyConverter(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
+7
